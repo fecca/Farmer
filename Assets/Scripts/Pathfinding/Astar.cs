@@ -168,7 +168,7 @@ public class Astar
         return Math.Abs(start.x - end.x) + Math.Abs(start.y - end.y);
     }
 
-    public static bool[,] ConvertToBoolArray(Farmer.NodeBehaviour[,] grid)
+    public static bool[,] ConvertToBoolArray(NodeBehaviour[,] grid)
     {
         var arr = new bool[grid.GetLength(0), grid.GetLength(1)];
 

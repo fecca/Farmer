@@ -1,6 +1,4 @@
-﻿using Farmer;
-
-public interface ILevelService
+﻿public interface ILevelService
 {
     void GenerateLevel();
     NodeBehaviour[,] GetLevel();

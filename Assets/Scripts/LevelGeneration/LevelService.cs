@@ -1,6 +1,4 @@
-﻿using Farmer;
-
-public class LevelService : ILevelService
+﻿public class LevelService : ILevelService
 {
     private readonly ILevelGenerator _levelGenerator;
     private readonly LevelConfig _levelConfig;

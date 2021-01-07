@@ -11,7 +11,17 @@ namespace ARPG.Moving
             var ray = Camera.main.ScreenPointToRay(position);
             var raycast = Physics.Raycast(ray, out raycastHit, 1000.0f, layer);
 
-            Debug.DrawRay(ray.origin, raycastHit.point, Color.magenta, 100f);
+            Debug.DrawRay(ray.origin, ray.direction, Color.magenta, 100f);
+
+            return raycast;
+        }
+
+        public bool RaycastAllLayers(Vector3 position, out RaycastHit raycastHit)
+        {
+            var ray = Camera.main.ScreenPointToRay(position);
+            var raycast = Physics.Raycast(ray, out raycastHit, 1000.0f);
+
+            Debug.DrawRay(ray.origin, ray.direction, Color.magenta, 100f);
 
             return raycast;
         }
@@ -27,7 +37,7 @@ namespace ARPG.Moving
             var ray = new Ray(from, direction);
             var raycast = Physics.Raycast(ray, out raycastHit, 1000.0f, _groundLayer);
 
-            Debug.DrawRay(ray.origin, raycastHit.point, Color.magenta, 100f);
+            Debug.DrawRay(ray.origin, ray.direction, Color.magenta, 100f);
 
             return raycast;
         }
