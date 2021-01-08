@@ -11,7 +11,8 @@ public class LevelInstaller : MonoInstaller
         Container.BindFactory<Transform, int, int, float, float, NodeBehaviour, NodeBehaviour.Factory>().FromComponentInNewPrefab(_nodeBehaviour).AsSingle();
 
         Container.Bind<ILevelService>().To<LevelService>().AsSingle();
-        Container.Bind<ILevelGenerator>().To<LevelGenerator>().AsSingle();
+        Container.Bind<ILevelGenerator>().To<GridLevelGenerator>().AsSingle();
+        Container.Bind<ILevelRepresentation>().To<MeshLevel>().AsSingle();
         Container.Bind<LevelConfig>().FromNewScriptableObject(_levelConfig).AsSingle();
 
         Container.DeclareSignal<NodeBehaviourClickedSignal>();

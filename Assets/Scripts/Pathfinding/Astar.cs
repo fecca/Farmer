@@ -168,7 +168,7 @@ public class Astar
         return Math.Abs(start.x - end.x) + Math.Abs(start.y - end.y);
     }
 
-    public static bool[,] ConvertToBoolArray(NodeBehaviour[,] grid)
+    public static bool[,] ConvertToBoolArray(float[,] grid)
     {
         var arr = new bool[grid.GetLength(0), grid.GetLength(1)];
 
@@ -176,7 +176,7 @@ public class Astar
         {
             for (var z = 0; z < grid.GetLength(1); z++)
             {
-                arr[x, z] = grid[x, z].IsWalkable;
+                arr[x, z] = true; //grid[x, z].IsWalkable;
             }
         }
 

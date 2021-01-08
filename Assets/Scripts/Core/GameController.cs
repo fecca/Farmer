@@ -1,4 +1,5 @@
-﻿using ARPG.Zenject;
+﻿using System;
+using ARPG.Zenject;
 using UnityEngine;
 using Zenject;
 
@@ -27,28 +28,33 @@ public class GameController : MonoBehaviour
         _levelService.GenerateLevel();
 
         SpawnPlayer();
-        SpawnTree();
+        // SpawnTree();
+    }
+
+    private void Update()
+    {
+        _levelService.DrawLevel((int)_playerController.transform.position.x, (int)_playerController.transform.position.z);
     }
 
     private void OnEnteredNode(EnteredNodeSignal signal)
     {
-        _levelService.CenterNodes(signal.x, signal.z);
+        // _levelService.CenterNodes(signal.x, signal.z);
     }
 
     private void SpawnPlayer()
     {
-        var node = _levelService.GetLevel()[startingX, startingZ];
-        var position = new Vector3(startingX, node.Elevation, startingZ);
+        // var node = _levelService.GetLevel()[startingX, startingZ];
+        var position = new Vector3(startingX, 5f, startingZ);
         _playerController.SetPosition(position);
 
-        _levelService.SetStartNodes(startingX, startingZ);
+        // _levelService.SetStartNodes(startingX, startingZ);
     }
 
     private void SpawnTree()
     {
-        var tree = Instantiate(_treePrefab);
-        var node = _levelService.GetLevel()[2, 16];
-        var position = new Vector3(node.Coordinates.x, node.Elevation, node.Coordinates.y);
-        tree.transform.position = position;
+        // var tree = Instantiate(_treePrefab);
+        // var node = _levelService.GetLevel()[2, 16];
+        // var position = new Vector3(node.Coordinates.x, node.Elevation, node.Coordinates.y);
+        // tree.transform.position = position;
     }
 }

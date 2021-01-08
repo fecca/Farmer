@@ -40,7 +40,7 @@ public class NodeBehaviour : MonoBehaviour, IInteractable
         tf.position = new Vector3(_x, Elevation / 2f, _z);
         tf.localScale = Vector3.one;
 
-        Toggle(false);
+        // Toggle(false);
     }
 
     private void Update()
