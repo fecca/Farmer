@@ -1,4 +1,5 @@
-﻿using ARPG.Zenject;
+﻿using System.Collections;
+using ARPG.Zenject;
 using UnityEngine;
 using Zenject;
 
@@ -11,6 +12,9 @@ public class NodeBehaviour : MonoBehaviour, IInteractable
     private bool _highlighted;
     private int _x;
     private int _z;
+    private Vector3 _targetScale;
+    private float _scaleTime = 0.2f;
+    private float _scaleTimer;
 
     public bool IsWalkable => transform.position.y > _waterLevel;
     public Vector2Int Coordinates => new Vector2Int(_x, _z);
@@ -34,7 +38,9 @@ public class NodeBehaviour : MonoBehaviour, IInteractable
         var tf = transform;
         tf.SetParent(_parent);
         tf.position = new Vector3(_x, Elevation / 2f, _z);
-        tf.localScale = new Vector3(1, Elevation, 1);
+        tf.localScale = Vector3.one;
+
+        Toggle(false);
     }
 
     private void Update()
@@ -58,6 +64,33 @@ public class NodeBehaviour : MonoBehaviour, IInteractable
         }
     }
 
+    public void Toggle(bool shown)
+    {
+        _targetScale = shown ? new Vector3(1, Elevation, 1) : Vector3.zero;
+        StopCoroutine(Scale());
+        StartCoroutine(Scale());
+    }
+
+    private IEnumerator Scale()
+    {
+        var currentScale = transform.localScale;
+        if (currentScale != _targetScale)
+        {
+            var t = 0f;
+            while (t < 1.0f)
+            {
+                _scaleTimer += Time.deltaTime;
+                t = _scaleTimer / _scaleTime;
+                transform.localScale = Vector3.Lerp(currentScale, _targetScale, t);
+
+                yield return null;
+            }
+
+            transform.localScale = _targetScale;
+            _scaleTimer = 0f;
+        }
+    }
+
     public void Hover(bool isHovering)
     {
         _highlighted = isHovering;
@@ -65,15 +98,13 @@ public class NodeBehaviour : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        _signalBusAdapter.Fire(new NodeBehaviourClickedSignal { nodeBehaviour = this });
+        _signalBusAdapter.Fire(new NodeBehaviourClickedSignal
+        {
+            nodeBehaviour = this
+        });
     }
 
     public class Factory : PlaceholderFactory<Transform, int, int, float, float, NodeBehaviour>
     {
     }
-}
-
-public class NodeBehaviourClickedSignal
-{
-    public NodeBehaviour nodeBehaviour;
 }

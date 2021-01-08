@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ARPG.Moving;
 using ARPG.Zenject;
@@ -27,6 +28,12 @@ public class PlayerController : MonoBehaviour
         _signalBusAdapter.Subscribe<NodeBehaviourClickedSignal>(OnNodeBehaviourClicked);
     }
 
+    private void Update()
+    {
+        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position,
+            transform.position + Vector3.up * 15f + Vector3.right * -10f + Vector3.forward * -10f, Time.deltaTime * 5f);
+    }
+
     private async void OnNodeBehaviourClicked(NodeBehaviourClickedSignal signal)
     {
         await CancelCurrentTask();
@@ -34,7 +41,7 @@ public class PlayerController : MonoBehaviour
         var path = CalculatePath(signal.nodeBehaviour);
         if (path.Count <= 0) return;
 
-        _playerTask = new PlayerMovementPlayerTask(path, transform, _raycaster);
+        _playerTask = new PlayerMovementPlayerTask(path, transform, _raycaster, _signalBusAdapter);
 
         await _playerTask.Execute();
     }

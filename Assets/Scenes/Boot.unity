@@ -807,6 +807,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ccaecd0726f56640804a8d371609564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _treePrefab: {fileID: -1249926264395580996, guid: 66ecc91d5041fba4ea4ed97f0089a8b7, type: 3}
+  startingZ: 10
+  startingX: 10
 --- !u!4 &2117624419
 Transform:
   m_ObjectHideFlags: 0

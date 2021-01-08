@@ -21,9 +21,9 @@ MonoBehaviour:
     noiseScale: 1
   waterLevel: 2
   globalNoiseScale: 32
-  width: 16
-  height: 16
+  width: 32
+  height: 32
   seed: 0
   worldElevation: 5
-  xChunks: 2
-  zChunks: 2
+  xChunks: 1
+  zChunks: 1

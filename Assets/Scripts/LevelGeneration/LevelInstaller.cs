@@ -15,5 +15,6 @@ public class LevelInstaller : MonoInstaller
         Container.Bind<LevelConfig>().FromNewScriptableObject(_levelConfig).AsSingle();
 
         Container.DeclareSignal<NodeBehaviourClickedSignal>();
+        Container.DeclareSignal<EnteredNodeSignal>();
     }
 }

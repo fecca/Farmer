@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ARPG.Moving;
+using ARPG.Zenject;
 using UnityEngine;
 
 public class PlayerMovementPlayerTask : PlayerTask
@@ -12,12 +13,14 @@ public class PlayerMovementPlayerTask : PlayerTask
     private readonly Raycaster _raycaster;
     private CancellationTokenSource _cancellationTokenSource;
     private bool _isRunning;
+    private ISignalBusAdapter _signalBusAdapter;
 
-    public PlayerMovementPlayerTask(List<Vector2Int> path, Transform transform, Raycaster raycaster)
+    public PlayerMovementPlayerTask(List<Vector2Int> path, Transform transform, Raycaster raycaster, ISignalBusAdapter signalBusAdapter)
     {
         _path = path;
         _transform = transform;
         _raycaster = raycaster;
+        _signalBusAdapter = signalBusAdapter;
     }
 
     public override PlayerTaskType Type => PlayerTaskType.Move;
@@ -56,6 +59,8 @@ public class PlayerMovementPlayerTask : PlayerTask
             await Hop(newPosition, 0.25f);
 
             _transform.position = newPosition;
+
+            _signalBusAdapter.Fire(new EnteredNodeSignal { x = (int) newPosition.x, z = (int) newPosition.z });
         }
 
         _isRunning = false;
