@@ -28,10 +28,29 @@ public class PlayerController : MonoBehaviour
         _signalBusAdapter.Subscribe<NodeBehaviourClickedSignal>(OnNodeBehaviourClicked);
     }
 
+    private float _movementSpeed = 10f;
+
     private void Update()
     {
         Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position,
-            transform.position + Vector3.up * 15f + Vector3.right * -10f + Vector3.forward * -10f, Time.deltaTime * 5f);
+            transform.position + Vector3.up * 15f + Vector3.right * -15f + Vector3.forward * -15f, Time.deltaTime * 5f);
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            transform.position += transform.forward * Time.deltaTime * _movementSpeed;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            transform.position -= transform.right * Time.deltaTime * _movementSpeed;
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            transform.position -= transform.forward * Time.deltaTime * _movementSpeed;
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            transform.position += transform.right * Time.deltaTime * _movementSpeed;
+        }
     }
 
     private async void OnNodeBehaviourClicked(NodeBehaviourClickedSignal signal)
