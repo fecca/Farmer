@@ -1,52 +1,75 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public interface ILevelRepresentation
 {
-    void DrawLevel(float[,] level, int x, int z);
+    void DrawLevel(float[,] level, int playerX, int playerZ);
 }
 
 public class MeshLevel : ILevelRepresentation
 {
     private Mesh _mesh;
+    private Mesh _meshSideL;
+    private Mesh _meshSideR;
+    private Mesh _meshSideB;
+    private Mesh _meshSideT;
 
     public MeshLevel()
     {
         var go = new GameObject("Level");
         go.AddComponent<MeshRenderer>();
         _mesh = go.AddComponent<MeshFilter>().mesh;
+
+        var goSideL = new GameObject("Level_Side");
+        goSideL.AddComponent<MeshRenderer>();
+        _meshSideL = goSideL.AddComponent<MeshFilter>().mesh;
+
+        var goSideR = new GameObject("Level_Side");
+        goSideR.AddComponent<MeshRenderer>();
+        _meshSideR = goSideR.AddComponent<MeshFilter>().mesh;
+
+        var goSideB = new GameObject("Level_Side");
+        goSideB.AddComponent<MeshRenderer>();
+        _meshSideB = goSideB.AddComponent<MeshFilter>().mesh;
+
+        var goSideT = new GameObject("Level_Side");
+        goSideT.AddComponent<MeshRenderer>();
+        _meshSideT = goSideT.AddComponent<MeshFilter>().mesh;
     }
 
-    public void DrawLevel(float[,] level, int centerX, int centerZ)
+    public void DrawLevel(float[,] level, int playerX, int playerZ)
     {
-        var centerPosition = new Vector2Int(centerX, centerZ);
-        var radius = 3;
+        var radius = 1;
         var xSize = radius * 2 + 1;
         var zSize = radius * 2 + 1;
-        var vertices = new Vector3[xSize * zSize];
+        var centerX = Mathf.Clamp(playerX, 0 + radius, level.GetLength(0) - radius - 2);
+        var centerZ = Mathf.Clamp(playerZ, 0 + radius, level.GetLength(1) - radius - 2);
 
-        for (int i = 0, x = centerPosition.x - radius; x < centerPosition.x + radius + 1; x++)
+        var leftMost = centerX - radius;
+        var rightMost = leftMost + xSize + 1;
+        var bottomMost = centerZ - radius;
+        var topMost = bottomMost + zSize + 1;
+
+        var vertices = new Vector3[(xSize + 1) * (zSize + 1)];
+
+        for (int i = 0, x = leftMost; x < rightMost; x++)
         {
-            for (var z = centerPosition.y - radius; z < centerPosition.y + radius + 1; z++, i++)
+            for (var z = bottomMost; z < topMost; z++, i++)
             {
-                if (IsInRange(level, x, z))
-                {
-                    vertices[i] = new Vector3(x, level[x, z], z);
-                }
+                vertices[i] = new Vector3(x, level[x, z], z);
             }
         }
 
-        var triangles = new int[(xSize) * (zSize) * 6];
-        for (int triangleIndex = 0, vertexIndex = 0, x = 0; x < xSize - 1; x++, vertexIndex++)
+        var triangles = new int[xSize * zSize * 6];
+        for (int triangleIndex = 0, vertexIndex = 0, x = 0; x < xSize; x++, vertexIndex++)
         {
-            for (var z = 0; z < zSize - 1; z++, triangleIndex += 6, vertexIndex++)
+            for (var z = 0; z < zSize; z++, triangleIndex += 6, vertexIndex++)
             {
                 triangles[triangleIndex] = vertexIndex;
                 triangles[triangleIndex + 1] = vertexIndex + 1;
-                triangles[triangleIndex + 2] = vertexIndex + zSize + 1;
+                triangles[triangleIndex + 2] = vertexIndex + zSize + 2;
 
-                triangles[triangleIndex + 3] = vertexIndex + zSize + 1;
-                triangles[triangleIndex + 4] = vertexIndex + zSize;
+                triangles[triangleIndex + 3] = vertexIndex + zSize + 2;
+                triangles[triangleIndex + 4] = vertexIndex + zSize + 1;
                 triangles[triangleIndex + 5] = vertexIndex;
             }
         }
@@ -54,11 +77,61 @@ public class MeshLevel : ILevelRepresentation
         _mesh.SetVertices(vertices);
         _mesh.triangles = triangles;
         _mesh.RecalculateNormals();
+
+        DrawLeftSide(zSize, bottomMost, topMost, leftMost, level);
+        DrawRightSide(zSize, bottomMost, topMost, rightMost, level);
     }
 
-    private bool IsInRange(float[,] level, int x, int z)
+    private void DrawLeftSide(int zSize, int bottomMost, int topMost, int leftMost, float[,] level)
     {
-        return x >= 0 && x < level.GetLength(0) && z >= 0 && z < level.GetLength(1);
+        var sideVertices = new Vector3[(zSize + 1) * 2];
+        for (int i = 0, z = bottomMost; z < topMost; z++, i += 2)
+        {
+            sideVertices[i] = new Vector3(leftMost, -5f, z);
+            sideVertices[i + 1] = new Vector3(leftMost, level[leftMost, z], z);
+        }
+
+        var sideTriangles = new int[zSize * 6];
+        for (int triangleIndex = 0, vertexIndex = 0, z = 0; z < zSize; z++, triangleIndex += 6, vertexIndex += 2)
+        {
+            sideTriangles[triangleIndex] = vertexIndex;
+            sideTriangles[triangleIndex + 1] = vertexIndex + 2;
+            sideTriangles[triangleIndex + 2] = vertexIndex + 1;
+
+            sideTriangles[triangleIndex + 3] = vertexIndex + 1;
+            sideTriangles[triangleIndex + 4] = vertexIndex + 2;
+            sideTriangles[triangleIndex + 5] = vertexIndex + 3;
+        }
+
+        _meshSideL.SetVertices(sideVertices);
+        _meshSideL.triangles = sideTriangles;
+        _meshSideL.RecalculateNormals();
+    }
+
+    private void DrawRightSide(int zSize, int bottomMost, int topMost, int rightMost, float[,] level)
+    {
+        var sideVertices = new Vector3[(zSize + 1) * 2];
+        for (int i = 0, z = bottomMost; z < topMost; z++, i += 2)
+        {
+            sideVertices[i] = new Vector3(rightMost, -5f, z);
+            sideVertices[i + 1] = new Vector3(rightMost, level[rightMost, z], z);
+        }
+
+        var sideTriangles = new int[zSize * 6];
+        for (int triangleIndex = 0, vertexIndex = 0, z = 0; z < zSize; z++, triangleIndex += 6, vertexIndex += 2)
+        {
+            sideTriangles[triangleIndex] = vertexIndex;
+            sideTriangles[triangleIndex + 1] = vertexIndex + 1;
+            sideTriangles[triangleIndex + 2] = vertexIndex + 2;
+
+            sideTriangles[triangleIndex + 3] = vertexIndex + 2;
+            sideTriangles[triangleIndex + 4] = vertexIndex + 1;
+            sideTriangles[triangleIndex + 5] = vertexIndex + 3;
+        }
+
+        _meshSideR.SetVertices(sideVertices);
+        _meshSideR.triangles = sideTriangles;
+        _meshSideR.RecalculateNormals();
     }
 }
 
@@ -71,7 +144,7 @@ public class CubeLevel : ILevelRepresentation
         _nodeFactory = nodeFactory;
     }
 
-    public void DrawLevel(float[,] level, int centerX, int centerz)
+    public void DrawLevel(float[,] level, int playerX, int playerZ)
     {
         for (var x = 0; x < level.GetLength(0); x++)
         {
@@ -81,11 +154,6 @@ public class CubeLevel : ILevelRepresentation
             }
         }
     }
-
-    // private bool IsInRange(int x, int z)
-    // {
-    //     return x >= 0 && x < _level.GetLength(0) && z >= 0 && z < _level.GetLength(1);
-    // }
 }
 
 public class LevelService : ILevelService

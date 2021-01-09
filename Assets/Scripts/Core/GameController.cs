@@ -6,8 +6,8 @@ using Zenject;
 public class GameController : MonoBehaviour
 {
     public TreeBehaviour _treePrefab;
-    public int startingZ = 10;
-    public int startingX = 10;
+    public int startingZ = 2;
+    public int startingX = 2;
 
     private ILevelService _levelService;
     private PlayerController _playerController;
@@ -33,7 +33,7 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        _levelService.DrawLevel((int)_playerController.transform.position.x, (int)_playerController.transform.position.z);
+        _levelService.DrawLevel((int) _playerController.transform.position.x, (int) _playerController.transform.position.z);
     }
 
     private void OnEnteredNode(EnteredNodeSignal signal)
